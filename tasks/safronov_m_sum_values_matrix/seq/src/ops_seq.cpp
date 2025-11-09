@@ -12,7 +12,9 @@ namespace safronov_m_sum_values_matrix {
 SafronovMSumValuesMatrixSEQ::SafronovMSumValuesMatrixSEQ(const InType &in) {
   SetTypeOfTask(GetStaticTypeOfTask());
   GetInput() = in;
-  GetOutput() = std::vector<double>();
+  if (!GetOutput().empty()) {
+    GetOutput().clear();
+  }  //
 }
 
 bool SafronovMSumValuesMatrixSEQ::ValidationImpl() {
