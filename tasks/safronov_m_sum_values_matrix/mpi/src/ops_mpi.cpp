@@ -59,7 +59,6 @@ bool SafronovMSumValuesMatrixMPI::RunImpl() {
 
   if (rank == 0) {
     int count_column = GetInput()[0].size();
-    GetOutput().resize(count_column);
 
     for (int i = 1; i < size; i++) {
       std::vector<int> interval = calculating_interval(size, i, count_column);
@@ -68,8 +67,8 @@ bool SafronovMSumValuesMatrixMPI::RunImpl() {
 
     std::vector<int> interval = calculating_interval(size, 0, count_column);
     std::vector<double> elems = summ_values(interval[0], interval[1]);
-    for (int i = interval[0]; i <= interval[1]; i++) {
-      GetOutput()[i] = elems[i - interval[0]];
+    for (auto it = elems.begin(); it != elems.end(); it++) {
+      GetOutput().push_back(*it);
     }
 
     MPI_Status status;
@@ -78,9 +77,8 @@ bool SafronovMSumValuesMatrixMPI::RunImpl() {
       MPI_Recv(&size_elems, 1, MPI_INT, i, 1, MPI_COMM_WORLD, &status);
       std::vector<double> buf(size_elems);
       MPI_Recv(buf.data(), size_elems, MPI_DOUBLE, i, 2, MPI_COMM_WORLD, &status);
-      interval = calculating_interval(size, i, count_column);
-      for (int j = interval[0]; j <= interval[1]; j++) {
-        GetOutput()[j] = buf[j - interval[0]];
+      for (auto it = buf.begin(); it != buf.end(); it++) {
+        GetOutput().push_back(*it);
       }
     }
 
