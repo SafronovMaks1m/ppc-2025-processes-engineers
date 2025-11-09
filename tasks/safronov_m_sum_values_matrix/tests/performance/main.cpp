@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <math.h>
 
 #include "safronov_m_sum_values_matrix/common/include/common.hpp"
 #include "safronov_m_sum_values_matrix/mpi/include/ops_mpi.hpp"
@@ -13,7 +14,8 @@ class SafronovMSumValuesMatrixPerfTest : public ppc::util::BaseRunPerfTests<InTy
   OutType _res;
 
   void SetUp() override {
-    input_data_ = std::vector<std::vector<double>>(2000, std::vector<double>(2000, 2));
+    int n = static_cast<int>(std::sqrt(kCount_));
+    input_data_ = std::vector<std::vector<double>>(n, std::vector<double>(n, 2));
     _res = std::vector<double>(2000, 4000.0);
   }
 
