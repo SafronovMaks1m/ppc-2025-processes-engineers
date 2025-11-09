@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "safronov_m_sum_values_matrix/common/include/common.hpp"
 #include "task/include/task.hpp"
 

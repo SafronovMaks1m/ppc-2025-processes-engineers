@@ -8,15 +8,17 @@
 namespace safronov_m_sum_values_matrix {
 
 class SafronovMSumValuesMatrixPerfTest : public ppc::util::BaseRunPerfTests<InType, OutType> {
-  const int kCount_ = 100;
+  const int kCount_ = 4000000;
   InType input_data_{};
+  OutType _res;
 
   void SetUp() override {
-    input_data_ = kCount_;
+    input_data_ = std::vector<std::vector<double>>(2000, std::vector<double>(2000, 2));
+    _res = std::vector<double>(2000, 4000.0);
   }
 
   bool CheckTestOutputData(OutType &output_data) final {
-    return input_data_ == output_data;
+    return _res == output_data;
   }
 
   InType GetTestInputData() final {
@@ -29,7 +31,8 @@ TEST_P(SafronovMSumValuesMatrixPerfTest, RunPerfModes) {
 }
 
 const auto kAllPerfTasks =
-    ppc::util::MakeAllPerfTasks<InType, SafronovMSumValuesMatrixMPI, SafronovMSumValuesMatrixSEQ>(PPC_SETTINGS_safronov_m_sum_values_matrix);
+    ppc::util::MakeAllPerfTasks<InType, SafronovMSumValuesMatrixMPI, SafronovMSumValuesMatrixSEQ>(
+        PPC_SETTINGS_safronov_m_sum_values_matrix);
 
 const auto kGtestValues = ppc::util::TupleToGTestValues(kAllPerfTasks);
 

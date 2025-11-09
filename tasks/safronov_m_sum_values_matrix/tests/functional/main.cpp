@@ -23,35 +23,18 @@ namespace safronov_m_sum_values_matrix {
 class SafronovMSumValuesMatrixFuncTests : public ppc::util::BaseRunFuncTests<InType, OutType, TestType> {
  public:
   static std::string PrintTestParam(const TestType &test_param) {
-    return std::to_string(std::get<0>(test_param)) + "_" + std::get<1>(test_param);
+    return std::get<0>(test_param);
   }
 
  protected:
   void SetUp() override {
-    int width = -1;
-    int height = -1;
-    int channels = -1;
-    std::vector<uint8_t> img;
-    // Read image
-    {
-      std::string abs_path = ppc::util::GetAbsoluteTaskPath(PPC_ID_safronov_m_sum_values_matrix, "pic.jpg");
-      auto *data = stbi_load(abs_path.c_str(), &width, &height, &channels, 0);
-      if (data == nullptr) {
-        throw std::runtime_error("Failed to load image: " + std::string(stbi_failure_reason()));
-      }
-      img = std::vector<uint8_t>(data, data + (static_cast<ptrdiff_t>(width * height * channels)));
-      stbi_image_free(data);
-      if (std::cmp_not_equal(width, height)) {
-        throw std::runtime_error("width != height: ");
-      }
-    }
-
     TestType params = std::get<static_cast<std::size_t>(ppc::util::GTestParamIndex::kTestParams)>(GetParam());
-    input_data_ = width - height + std::min(std::accumulate(img.begin(), img.end(), 0), channels);
+    input_data_ = std::get<1>(params);
+    _res = std::get<2>(params);
   }
 
   bool CheckTestOutputData(OutType &output_data) final {
-    return (input_data_ == output_data);
+    return (_res == output_data);
   }
 
   InType GetTestInputData() final {
@@ -59,20 +42,30 @@ class SafronovMSumValuesMatrixFuncTests : public ppc::util::BaseRunFuncTests<InT
   }
 
  private:
-  InType input_data_ = 0;
+  InType input_data_;
+  OutType _res;
 };
 
 namespace {
 
-TEST_P(SafronovMSumValuesMatrixFuncTests, MatmulFromPic) {
+TEST_P(SafronovMSumValuesMatrixFuncTests, SumColumnsMatrix) {
   ExecuteTest(GetParam());
 }
 
-const std::array<TestType, 3> kTestParam = {std::make_tuple(3, "3"), std::make_tuple(5, "5"), std::make_tuple(7, "7")};
+const std::array<TestType, 5> kTestParam = {
+    std::make_tuple("a", std::vector<std::vector<double>>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}},
+                    std::vector<double>({12.0, 15.0, 18.0})),
+    std::make_tuple("b", std::vector<std::vector<double>>{{1, 2, 3}}, std::vector<double>({1.0, 2.0, 3.0})),
+    std::make_tuple("v", std::vector<std::vector<double>>{{1, 2, 3, 4}, {4, 5, 6, 7}, {7, 8, 9, 10}},
+                    std::vector<double>({12.0, 15.0, 18.0, 21.0})),
+    std::make_tuple("g", std::vector<std::vector<double>>{{1, 2, 3, 4}, {4, 5, 6, 7}, {7, 8, 9, 10}},
+                    std::vector<double>({12.0, 15.0, 18.0, 21.0})),
+    std::make_tuple("d", std::vector<std::vector<double>>(100, std::vector<double>(100, 1)),
+                    std::vector<double>(100, 100.0))};
 
-const auto kTestTasksList =
-    std::tuple_cat(ppc::util::AddFuncTask<SafronovMSumValuesMatrixMPI, InType>(kTestParam, PPC_SETTINGS_safronov_m_sum_values_matrix),
-                   ppc::util::AddFuncTask<SafronovMSumValuesMatrixSEQ, InType>(kTestParam, PPC_SETTINGS_safronov_m_sum_values_matrix));
+const auto kTestTasksList = std::tuple_cat(
+    ppc::util::AddFuncTask<SafronovMSumValuesMatrixMPI, InType>(kTestParam, PPC_SETTINGS_safronov_m_sum_values_matrix),
+    ppc::util::AddFuncTask<SafronovMSumValuesMatrixSEQ, InType>(kTestParam, PPC_SETTINGS_safronov_m_sum_values_matrix));
 
 const auto kGtestValues = ppc::util::ExpandToValues(kTestTasksList);
 

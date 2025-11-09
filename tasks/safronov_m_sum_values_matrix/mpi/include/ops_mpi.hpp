@@ -17,6 +17,8 @@ class SafronovMSumValuesMatrixMPI : public BaseTask {
   bool PreProcessingImpl() override;
   bool RunImpl() override;
   bool PostProcessingImpl() override;
+  std::vector<double> summ_values(const int start, const int end);
+  std::vector<int> calculating_interval(const int &size_prcs, const int rank, const int &count_column);
 };
 
 }  // namespace safronov_m_sum_values_matrix
