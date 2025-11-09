@@ -42,7 +42,12 @@ std::vector<int> SafronovMSumValuesMatrixMPI::calculating_interval(const int &si
   std::vector<int> vec(2);
   int whole_part = count_column / size_prcs;
   int real_part = count_column % size_prcs;
-  int start = rank * whole_part + (rank < real_part ? rank : real_part);
+  int start = rank * whole_part;
+  if ((rank - 1 < real_part) && (rank - 1 != -1)) {
+    start += rank;
+  } else if (rank != 0) {
+    start += real_part;
+  }
   int end = start + whole_part - 1;
   if (rank < real_part) {
     end += 1;
