@@ -12,7 +12,8 @@ namespace safronov_m_sum_values_matrix {
 
 SafronovMSumValuesMatrixMPI::SafronovMSumValuesMatrixMPI(const InType &in) {
   SetTypeOfTask(GetStaticTypeOfTask());
-  GetInput() = in;
+  InType tmp(in);
+  GetInput().swap(tmp);
 }
 
 bool SafronovMSumValuesMatrixMPI::ValidationImpl() {
