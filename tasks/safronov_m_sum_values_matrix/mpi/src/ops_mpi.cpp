@@ -22,7 +22,7 @@ bool SafronovMSumValuesMatrixMPI::ValidationImpl() {
 
 bool SafronovMSumValuesMatrixMPI::PreProcessingImpl() {
   return true;
-} //
+}
 
 std::vector<double> SafronovMSumValuesMatrixMPI::summ_values(const int start, const int end) {
   std::vector<double> vec;
