@@ -1,15 +1,10 @@
 #include <gtest/gtest.h>
 #include <stb/stb_image.h>
 
-#include <algorithm>
 #include <array>
 #include <cstddef>
-#include <cstdint>
-#include <numeric>
-#include <stdexcept>
 #include <string>
 #include <tuple>
-#include <utility>
 #include <vector>
 
 #include "safronov_m_sum_values_matrix/common/include/common.hpp"
@@ -30,11 +25,11 @@ class SafronovMSumValuesMatrixFuncTests : public ppc::util::BaseRunFuncTests<InT
   void SetUp() override {
     TestType params = std::get<static_cast<std::size_t>(ppc::util::GTestParamIndex::kTestParams)>(GetParam());
     input_data_ = std::get<1>(params);
-    _res = std::get<2>(params);
+    res_ = std::get<2>(params);
   }
 
   bool CheckTestOutputData(OutType &output_data) final {
-    return (_res == output_data);
+    return (res_ == output_data);
   }
 
   InType GetTestInputData() final {
@@ -43,7 +38,7 @@ class SafronovMSumValuesMatrixFuncTests : public ppc::util::BaseRunFuncTests<InT
 
  private:
   InType input_data_;
-  OutType _res;
+  OutType res_;
 };
 
 namespace {

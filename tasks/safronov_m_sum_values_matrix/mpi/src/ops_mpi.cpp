@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "safronov_m_sum_values_matrix/common/include/common.hpp"
-#include "util/include/util.hpp"
 
 namespace safronov_m_sum_values_matrix {
 
@@ -71,18 +70,18 @@ bool SafronovMSumValuesMatrixMPI::RunImpl() {
 
     std::vector<int> interval = CalculatingInterval(size, 0, count_column);
     std::vector<double> elems = SummValues(interval[0], interval[1]);
-    for (auto it = elems.begin(); it != elems.end(); it++) {
-      GetOutput().push_back(*it);
+    for (double &elem : elems) {
+      GetOutput().push_back(elem);
     }
 
     MPI_Status status;
     for (int i = 1; i < size; i++) {
-      int size_elems;
+      int size_elems = 0;
       MPI_Recv(&size_elems, 1, MPI_INT, i, 1, MPI_COMM_WORLD, &status);
       std::vector<double> buf(size_elems);
       MPI_Recv(buf.data(), size_elems, MPI_DOUBLE, i, 2, MPI_COMM_WORLD, &status);
-      for (auto it = buf.begin(); it != buf.end(); it++) {
-        GetOutput().push_back(*it);
+      for (double &elem : buf) {
+        GetOutput().push_back(elem);
       }
     }
 
@@ -91,14 +90,14 @@ bool SafronovMSumValuesMatrixMPI::RunImpl() {
     std::vector<int> buf(2);
     MPI_Recv(buf.data(), 2, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
     std::vector<double> elems = SummValues(buf[0], buf[1]);
-    int size_elems = elems.size();
+    int size_elems = static_cast<int>(elems.size());
     MPI_Send(&size_elems, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
     MPI_Send(elems.data(), size_elems, MPI_DOUBLE, 0, 2, MPI_COMM_WORLD);
   }
 
   int total_size = 0;
   if (rank == 0) {
-    total_size = GetOutput().size();
+    total_size = static_cast<int>(GetOutput().size());
   }
 
   MPI_Bcast(&total_size, 1, MPI_INT, 0, MPI_COMM_WORLD);

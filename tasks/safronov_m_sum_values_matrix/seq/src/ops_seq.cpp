@@ -1,11 +1,9 @@
 #include "safronov_m_sum_values_matrix/seq/include/ops_seq.hpp"
 
-#include <numeric>
+#include <cstddef>
 #include <vector>
 
-#include "iostream"
 #include "safronov_m_sum_values_matrix/common/include/common.hpp"
-#include "util/include/util.hpp"
 
 namespace safronov_m_sum_values_matrix {
 
