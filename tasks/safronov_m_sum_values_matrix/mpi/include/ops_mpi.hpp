@@ -1,4 +1,6 @@
 #pragma once
+#include <cstddef>
+#include <vector>
 
 #include "safronov_m_sum_values_matrix/common/include/common.hpp"
 #include "task/include/task.hpp"
@@ -17,8 +19,8 @@ class SafronovMSumValuesMatrixMPI : public BaseTask {
   bool PreProcessingImpl() override;
   bool RunImpl() override;
   bool PostProcessingImpl() override;
-  std::vector<double> summ_values(const int start, const int end);
-  std::vector<int> calculating_interval(const int &size_prcs, const int rank, const int &count_column);
+  std::vector<double> SummValues(int start, int end);
+  static std::vector<int> CalculatingInterval(int size_prcs, int rank, int count_column);
 };
 
 }  // namespace safronov_m_sum_values_matrix

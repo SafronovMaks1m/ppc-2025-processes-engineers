@@ -2,7 +2,6 @@
 
 #include <mpi.h>
 
-#include <numeric>
 #include <vector>
 
 #include "safronov_m_sum_values_matrix/common/include/common.hpp"
@@ -25,20 +24,19 @@ bool SafronovMSumValuesMatrixMPI::PreProcessingImpl() {
   return true;
 }
 
-std::vector<double> SafronovMSumValuesMatrixMPI::summ_values(const int start, const int end) {
+std::vector<double> SafronovMSumValuesMatrixMPI::SummValues(const int start, const int end) {
   std::vector<double> vec;
   for (int i = start; i <= end; i++) {
     double summa = 0;
-    for (size_t j = 0; j < GetInput().size(); j++) {
-      summa += GetInput()[j][i];
+    for (const auto &row : GetInput()) {
+      summa += row[i];
     }
     vec.push_back(summa);
   }
   return vec;
 }
 
-std::vector<int> SafronovMSumValuesMatrixMPI::calculating_interval(const int &size_prcs, const int rank,
-                                                                   const int &count_column) {
+std::vector<int> SafronovMSumValuesMatrixMPI::CalculatingInterval(int size_prcs, int rank, int count_column) {
   std::vector<int> vec(2);
   int whole_part = count_column / size_prcs;
   int real_part = count_column % size_prcs;
@@ -58,20 +56,21 @@ std::vector<int> SafronovMSumValuesMatrixMPI::calculating_interval(const int &si
 }
 
 bool SafronovMSumValuesMatrixMPI::RunImpl() {
-  int size, rank;
+  int size = 0;
+  int rank = 0;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   if (rank == 0) {
-    int count_column = GetInput()[0].size();
+    int count_column = static_cast<int>(GetInput()[0].size());
 
     for (int i = 1; i < size; i++) {
-      std::vector<int> interval = calculating_interval(size, i, count_column);
+      std::vector<int> interval = CalculatingInterval(size, i, count_column);
       MPI_Send(interval.data(), 2, MPI_INT, i, 0, MPI_COMM_WORLD);
     }
 
-    std::vector<int> interval = calculating_interval(size, 0, count_column);
-    std::vector<double> elems = summ_values(interval[0], interval[1]);
+    std::vector<int> interval = CalculatingInterval(size, 0, count_column);
+    std::vector<double> elems = SummValues(interval[0], interval[1]);
     for (auto it = elems.begin(); it != elems.end(); it++) {
       GetOutput().push_back(*it);
     }
@@ -91,7 +90,7 @@ bool SafronovMSumValuesMatrixMPI::RunImpl() {
     MPI_Status status;
     std::vector<int> buf(2);
     MPI_Recv(buf.data(), 2, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
-    std::vector<double> elems = summ_values(buf[0], buf[1]);
+    std::vector<double> elems = SummValues(buf[0], buf[1]);
     int size_elems = elems.size();
     MPI_Send(&size_elems, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
     MPI_Send(elems.data(), size_elems, MPI_DOUBLE, 0, 2, MPI_COMM_WORLD);

@@ -28,8 +28,8 @@ bool SafronovMSumValuesMatrixSEQ::RunImpl() {
   std::vector<double> vector(GetInput()[0].size());
   for (size_t i = 0; i < GetInput()[0].size(); i++) {
     double summa = 0;
-    for (size_t j = 0; j < GetInput().size(); j++) {
-      summa += GetInput()[j][i];
+    for (const auto &row : GetInput()) {
+      summa += row[i];
     }
     vector[i] = summa;
   }
