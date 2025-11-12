@@ -15,7 +15,7 @@ SafronovMSumValuesMatrixMPI::SafronovMSumValuesMatrixMPI(const InType &in) {
 }
 
 bool SafronovMSumValuesMatrixMPI::ValidationImpl() {
-  return !GetInput().empty() && !GetInput()[0].empty();
+  return true;
 }
 
 bool SafronovMSumValuesMatrixMPI::PreProcessingImpl() {
@@ -55,6 +55,10 @@ std::vector<int> SafronovMSumValuesMatrixMPI::CalculatingInterval(int size_prcs,
 }
 
 bool SafronovMSumValuesMatrixMPI::RunImpl() {
+  if (GetInput().empty()) {
+    return true;
+  }
+
   int size = 0;
   int rank = 0;
   MPI_Comm_size(MPI_COMM_WORLD, &size);

@@ -14,7 +14,7 @@ SafronovMSumValuesMatrixSEQ::SafronovMSumValuesMatrixSEQ(const InType &in) {
 }
 
 bool SafronovMSumValuesMatrixSEQ::ValidationImpl() {
-  return !GetInput().empty() && !GetInput()[0].empty();
+  return true;
 }
 
 bool SafronovMSumValuesMatrixSEQ::PreProcessingImpl() {
@@ -23,6 +23,9 @@ bool SafronovMSumValuesMatrixSEQ::PreProcessingImpl() {
 }
 
 bool SafronovMSumValuesMatrixSEQ::RunImpl() {
+  if (GetInput().empty()) {
+    return true;
+  }
   std::vector<double> vector(GetInput()[0].size());
   for (size_t i = 0; i < GetInput()[0].size(); i++) {
     double summa = 0;

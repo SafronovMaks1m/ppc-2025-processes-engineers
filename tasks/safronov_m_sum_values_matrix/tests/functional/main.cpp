@@ -47,7 +47,7 @@ TEST_P(SafronovMSumValuesMatrixFuncTests, SumColumnsMatrix) {
   ExecuteTest(GetParam());
 }
 
-const std::array<TestType, 5> kTestParam = {
+const std::array<TestType, 7> kTestParam = {
     std::make_tuple("a", std::vector<std::vector<double>>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}},
                     std::vector<double>({12.0, 15.0, 18.0})),
     std::make_tuple("b", std::vector<std::vector<double>>{{1, 2, 3}}, std::vector<double>({1.0, 2.0, 3.0})),
@@ -55,8 +55,11 @@ const std::array<TestType, 5> kTestParam = {
                     std::vector<double>({12.0, 15.0, 18.0, 21.0})),
     std::make_tuple("g", std::vector<std::vector<double>>{{1, 2, 3, 4}, {4, 5, 6, 7}, {7, 8, 9, 10}},
                     std::vector<double>({12.0, 15.0, 18.0, 21.0})),
-    std::make_tuple("d", std::vector<std::vector<double>>(100, std::vector<double>(100, 1)),
-                    std::vector<double>(100, 100.0))};
+    std::make_tuple("d", std::vector<std::vector<double>>{{-1.1, -2.2, -3.3}, {-4.4, 5, 6}, {2.4, 6, 4.5}},
+                    std::vector<double>({-3.1, 8.8, 7.2})),
+    std::make_tuple("e", std::vector<std::vector<double>>(100, std::vector<double>(100, 1)),
+                    std::vector<double>(100, 100.0)),
+    std::make_tuple("i", std::vector<std::vector<double>>(0), std::vector<double>(0))};
 
 const auto kTestTasksList = std::tuple_cat(
     ppc::util::AddFuncTask<SafronovMSumValuesMatrixMPI, InType>(kTestParam, PPC_SETTINGS_safronov_m_sum_values_matrix),
