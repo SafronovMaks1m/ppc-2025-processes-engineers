@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <cmath>
+#include <cstddef>
 #include <vector>
 
 #include "safronov_m_sum_values_matrix/common/include/common.hpp"
