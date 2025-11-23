@@ -22,7 +22,15 @@ class SafronovMSumValuesMatrixPerfTest : public ppc::util::BaseRunPerfTests<InTy
   }
 
   bool CheckTestOutputData(OutType &output_data) final {
-    return res_ == output_data;
+    if (res_.size() != output_data.size()) {
+      return false;
+    }
+    for (size_t i = 0; i < res_.size(); i++) {
+      if (std::abs(res_[i] - output_data[i]) > 1e-10) {
+        return false;
+      }
+    }
+    return true;
   }
 
   InType GetTestInputData() final {

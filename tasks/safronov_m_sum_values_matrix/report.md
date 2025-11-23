@@ -46,7 +46,7 @@
 Особое внимание уделено корректному распределению данных между процессами.
 
 ## 6. Experimental Setup
-- Hardware/OS: CPU - Intel Core i5-11400F, 8 ядер/16 потоков; RAM - 16 Gb; ОС - Windows 10 
+- Hardware/OS: CPU - Intel Core i5-11400F, 6 ядер/12 потоков; RAM - 16 Gb; ОС - Windows 10 
 - Toolchain: MinGW-w64 (g++ 7.3.0, x86_64-posix-seh), build type: Release  
 - Environment: PPC_NUM_PROC
 - Data: тестовые данные задаются вручную.

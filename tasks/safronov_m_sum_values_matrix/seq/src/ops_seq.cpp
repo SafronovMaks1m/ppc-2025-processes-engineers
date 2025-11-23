@@ -14,7 +14,7 @@ SafronovMSumValuesMatrixSEQ::SafronovMSumValuesMatrixSEQ(const InType &in) {
 }
 
 bool SafronovMSumValuesMatrixSEQ::ValidationImpl() {
-  return true;
+  return GetOutput().empty();
 }
 
 bool SafronovMSumValuesMatrixSEQ::PreProcessingImpl() {

@@ -15,7 +15,7 @@ SafronovMSumValuesMatrixMPI::SafronovMSumValuesMatrixMPI(const InType &in) {
 }
 
 bool SafronovMSumValuesMatrixMPI::ValidationImpl() {
-  return true;
+  return GetOutput().empty();
 }
 
 bool SafronovMSumValuesMatrixMPI::PreProcessingImpl() {
