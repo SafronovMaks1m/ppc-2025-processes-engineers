@@ -18,15 +18,11 @@ bool SafronovMSumValuesMatrixSEQ::ValidationImpl() {
     return true;
   }
   size_t cols = GetInput()[0].size();
-  if (cols == 0) {
-    return false;
-  }
+  std::size_t total = 0;
   for (const auto &row : GetInput()) {
-    if (row.size() != cols) {
-      return false;
-    }
+    total += row.size();
   }
-  return GetOutput().empty();
+  return GetOutput().empty() && (cols != 0) && ((cols * GetInput().size()) == total);
 }
 
 bool SafronovMSumValuesMatrixSEQ::PreProcessingImpl() {
