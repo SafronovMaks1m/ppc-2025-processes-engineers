@@ -14,6 +14,18 @@ SafronovMSumValuesMatrixSEQ::SafronovMSumValuesMatrixSEQ(const InType &in) {
 }
 
 bool SafronovMSumValuesMatrixSEQ::ValidationImpl() {
+  if (GetInput().empty()) {
+    return true;
+  }
+  size_t cols = GetInput()[0].size();
+  if (cols == 0) {
+    return false;
+  }
+  for (const auto &row : GetInput()) {
+    if (row.size() != cols) {
+      return false;
+    }
+  }
   return GetOutput().empty();
 }
 
