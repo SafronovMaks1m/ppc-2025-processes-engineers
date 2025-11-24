@@ -21,7 +21,7 @@ class SafronovMSumValuesMatrixMPI : public BaseTask {
   std::vector<double> SummValues(int start, int end);
   bool SendingOutMatrix(int rank);
   std::vector<double> ConversionToVector(int rows, int cols, int rank);
-  void СonversionToMatrix(const std::vector<double> &vector, int rows, int cols, int rank);
+  void ConversionToMatrix(const std::vector<double> &vector, int rows, int cols, int rank);
   static std::vector<int> CalculatingInterval(int size_prcs, int rank, int count_column);
 };
 

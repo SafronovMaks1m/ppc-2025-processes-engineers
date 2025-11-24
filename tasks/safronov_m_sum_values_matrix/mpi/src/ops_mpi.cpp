@@ -68,7 +68,7 @@ std::vector<int> SafronovMSumValuesMatrixMPI::CalculatingInterval(int size_prcs,
 }
 
 std::vector<double> SafronovMSumValuesMatrixMPI::ConversionToVector(int rows, int cols, int rank) {
-  std::vector<double> vector(rows * cols);
+  std::vector<double> vector(static_cast<std::size_t>(rows) * static_cast<std::size_t>(cols));
   if (rank == 0) {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
@@ -79,7 +79,7 @@ std::vector<double> SafronovMSumValuesMatrixMPI::ConversionToVector(int rows, in
   return vector;
 }
 
-void SafronovMSumValuesMatrixMPI::СonversionToMatrix(const std::vector<double> &vector, int rows, int cols, int rank) {
+void SafronovMSumValuesMatrixMPI::ConversionToMatrix(const std::vector<double> &vector, int rows, int cols, int rank) {
   if (rank != 0) {
     GetInput() = std::vector<std::vector<double>>(rows, std::vector<double>(cols));
     for (int i = 0; i < rows; i++) {
@@ -108,7 +108,7 @@ bool SafronovMSumValuesMatrixMPI::SendingOutMatrix(int rank) {
   std::vector<double> vector = ConversionToVector(rows, cols, rank);
 
   MPI_Bcast(vector.data(), rows * cols, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-  СonversionToMatrix(vector, rows, cols, rank);
+  ConversionToMatrix(vector, rows, cols, rank);
 
   return false;
 }
