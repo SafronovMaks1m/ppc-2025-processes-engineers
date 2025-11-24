@@ -67,17 +67,35 @@ std::vector<int> SafronovMSumValuesMatrixMPI::CalculatingInterval(int size_prcs,
   return vec;
 }
 
-bool SafronovMSumValuesMatrixMPI::RunImpl() {
-  int size = 0;
-  int rank = 0;
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+std::vector<double> SafronovMSumValuesMatrixMPI::ConversionToVector(int rows, int cols, int rank) {
+  std::vector<double> vector(rows * cols);
+  if (rank == 0) {
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        vector[(i * cols) + j] = GetInput()[i][j];
+      }
+    }
+  }
+  return vector;
+}
 
+void SafronovMSumValuesMatrixMPI::СonversionToMatrix(const std::vector<double> &vector, int rows, int cols, int rank) {
+  if (rank != 0) {
+    GetInput() = std::vector<std::vector<double>>(rows, std::vector<double>(cols));
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        GetInput()[i][j] = vector[(i * cols) + j];
+      }
+    }
+  }
+}
+
+bool SafronovMSumValuesMatrixMPI::SendingOutMatrix(int rank) {
   int rows = 0;
   int cols = 0;
   if (rank == 0) {
     rows = static_cast<int>(GetInput().size());
-    cols = rows ? static_cast<int>(GetInput()[0].size()) : 0;
+    cols = (rows != 0) ? static_cast<int>(GetInput()[0].size()) : 0;
   }
 
   MPI_Bcast(&rows, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -87,27 +105,23 @@ bool SafronovMSumValuesMatrixMPI::RunImpl() {
     return true;
   }
 
-  std::vector<double> vector;
-  if (rank == 0) {
-    vector.resize(rows * cols);
-    for (int i = 0; i < rows; i++) {
-      for (int j = 0; j < cols; j++) {
-        vector[i * cols + j] = GetInput()[i][j];
-      }
-    }
-  } else {
-    vector.resize(rows * cols);
-  }
+  std::vector<double> vector = ConversionToVector(rows, cols, rank);
 
   MPI_Bcast(vector.data(), rows * cols, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  СonversionToMatrix(vector, rows, cols, rank);
 
-  if (rank != 0) {
-    GetInput() = std::vector<std::vector<double>>(rows, std::vector<double>(cols));
-    for (int i = 0; i < rows; i++) {
-      for (int j = 0; j < cols; j++) {
-        GetInput()[i][j] = vector[i * cols + j];
-      }
-    }
+  return false;
+}
+
+bool SafronovMSumValuesMatrixMPI::RunImpl() {
+  int size = 0;
+  int rank = 0;
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  bool flag = SendingOutMatrix(rank);
+  if (flag) {
+    return true;
   }
 
   if (rank == 0) {
