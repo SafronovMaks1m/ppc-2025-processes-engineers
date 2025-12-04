@@ -39,7 +39,7 @@ bool SafronovMBubbleSortOddEvenSEQ::RunImpl() {
         flag = true;
       }
     }
-    for (int j = 1; j < n  - 1; j += 2) {
+    for (int j = 1; j < n - 1; j += 2) {
       if (array[j] > array[j + 1]) {
         int tmp = array[j + 1];
         array[j + 1] = array[j];
