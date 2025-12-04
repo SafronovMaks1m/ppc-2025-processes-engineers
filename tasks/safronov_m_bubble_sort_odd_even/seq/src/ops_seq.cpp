@@ -48,7 +48,7 @@ bool SafronovMBubbleSortOddEvenSEQ::RunImpl() {
       }
     }
   }
-  GetOutput() = array;
+  GetOutput().swap(array);
   return true;
 }
 
