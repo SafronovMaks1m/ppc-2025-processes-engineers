@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
-#include <ranges>
 #include <vector>
 
 #include "safronov_m_bubble_sort_odd_even/common/include/common.hpp"

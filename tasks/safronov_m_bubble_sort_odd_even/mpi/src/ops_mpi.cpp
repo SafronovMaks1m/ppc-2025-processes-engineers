@@ -68,10 +68,7 @@ void SafronovMBubbleSortOddEvenMPI::OddEvenBubble(std::vector<int> &own_data, in
   }
 }
 
-void SafronovMBubbleSortOddEvenMPI::DataExchange(std::vector<int> &own_data, int rank, int size, int neighbor) {
-  if (((rank + neighbor) >= size) || ((rank + neighbor) < 0)) {
-    return;
-  }
+void SafronovMBubbleSortOddEvenMPI::DataExchange(std::vector<int> &own_data, int rank, int neighbor) {
   MPI_Status status;
   int elem_send = neighbor == 1 ? own_data.back() : own_data[0];
   int elem_recv = 0;
@@ -86,25 +83,35 @@ void SafronovMBubbleSortOddEvenMPI::DataExchange(std::vector<int> &own_data, int
   }
 }
 
+void SafronovMBubbleSortOddEvenMPI::EvenPhase(std::vector<int> &own_data, std::vector<int> &interval, int size_arr,
+                                              int rank, int size) {
+  int own_size = static_cast<int>(own_data.size());
+  OddEvenBubble(own_data, own_size, interval[0], 0);
+  if ((rank % 2 == 0) && (rank + 1 < size) && (interval[1] != size_arr - 1) && (interval[0] <= interval[1])) {
+    DataExchange(own_data, rank, 1);
+  } else if ((interval[0] <= interval[1]) && (rank % 2 == 1)) {
+    DataExchange(own_data, rank, -1);
+  }
+}
+
+void SafronovMBubbleSortOddEvenMPI::OddPhase(std::vector<int> &own_data, std::vector<int> &interval, int size_arr,
+                                             int rank, int size) {
+  int own_size = static_cast<int>(own_data.size());
+  OddEvenBubble(own_data, own_size, interval[0], 1);
+  if ((rank % 2 == 1) && (rank + 1 < size) && (interval[1] != size_arr - 1) && (interval[0] <= interval[1])) {
+    DataExchange(own_data, rank, 1);
+  } else if ((interval[0] <= interval[1]) && (rank != 0) && (rank % 2 == 0)) {
+    DataExchange(own_data, rank, -1);
+  }
+}
+
 void SafronovMBubbleSortOddEvenMPI::BasisSortingLocalArrays(std::vector<int> &own_data, std::vector<int> &interval,
                                                             int size_arr, int rank, int size) {
-  int own_size = static_cast<int>(own_data.size());
-
   for (int i = 0; i < size_arr + size - 1; i++) {
     if (i % 2 == 0) {
-      OddEvenBubble(own_data, own_size, interval[0], 0);
-      if ((rank % 2 == 0) && (interval[1] != size_arr - 1) && (interval[0] <= interval[1])) {
-        DataExchange(own_data, rank, size, 1);
-      } else if ((interval[0] <= interval[1]) && (rank % 2 == 1)) {
-        DataExchange(own_data, rank, size, -1);
-      }
+      EvenPhase(own_data, interval, size_arr, rank, size);
     } else {
-      OddEvenBubble(own_data, own_size, interval[0], 1);
-      if ((rank % 2 == 1) && (interval[1] != size_arr - 1) && (interval[0] <= interval[1])) {
-        DataExchange(own_data, rank, size, 1);
-      } else if ((interval[0] <= interval[1]) && (rank % 2 == 0)) {
-        DataExchange(own_data, rank, size, -1);
-      }
+      OddPhase(own_data, interval, size_arr, rank, size);
     }
   }
 }

@@ -3,10 +3,8 @@
 
 #include <array>
 #include <cstddef>
-#include <stdexcept>
 #include <string>
 #include <tuple>
-#include <utility>
 #include <vector>
 
 #include "safronov_m_bubble_sort_odd_even/common/include/common.hpp"
