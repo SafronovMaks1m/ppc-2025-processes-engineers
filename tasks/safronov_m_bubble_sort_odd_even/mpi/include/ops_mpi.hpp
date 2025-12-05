@@ -23,7 +23,7 @@ class SafronovMBubbleSortOddEvenMPI : public BaseTask {
   void SendingVector(int rank);
   static void OddEvenBubble(std::vector<int> &own_data, int own_size, int begin, int phase);
   static void DataExchange(std::vector<int> &own_data, int rank, int neighbor);
-  void BasisSortingLocalArrays(std::vector<int> &own_data, std::vector<int> &interval, int size_arr, int rank,
+  static void BasisSortingLocalArrays(std::vector<int> &own_data, std::vector<int> &interval, int size_arr, int rank,
                                int size);
   static void EvenPhase(std::vector<int> &own_data, std::vector<int> &interval, int size_arr, int rank, int size);
   static void OddPhase(std::vector<int> &own_data, std::vector<int> &interval, int size_arr, int rank, int size);
