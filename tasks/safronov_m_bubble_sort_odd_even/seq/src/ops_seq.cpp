@@ -1,10 +1,8 @@
 #include "safronov_m_bubble_sort_odd_even/seq/include/ops_seq.hpp"
 
-#include <numeric>
 #include <vector>
 
 #include "safronov_m_bubble_sort_odd_even/common/include/common.hpp"
-#include "util/include/util.hpp"
 
 namespace safronov_m_bubble_sort_odd_even {
 
@@ -25,7 +23,7 @@ bool SafronovMBubbleSortOddEvenSEQ::PreProcessingImpl() {
 bool SafronovMBubbleSortOddEvenSEQ::RunImpl() {
   bool flag = true;
   std::vector<int> array = GetInput();
-  if (array.size() == 0) {
+  if (array.empty()) {
     return true;
   }
   int n = static_cast<int>(array.size());

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "safronov_m_bubble_sort_odd_even/common/include/common.hpp"
 #include "task/include/task.hpp"
 
@@ -19,8 +21,8 @@ class SafronovMBubbleSortOddEvenMPI : public BaseTask {
   bool PostProcessingImpl() override;
   static std::vector<int> CalculatingInterval(int size_prcs, int rank, int size_arr);
   void SendingVector(int rank);
-  void OddEvenBubble(std::vector<int> &own_data, int own_size, int begin, int phase);
-  void DataExchange(std::vector<int> &own_data, int rank, int neighbor);
+  static void OddEvenBubble(std::vector<int> &own_data, int own_size, int begin, int phase);
+  static void DataExchange(std::vector<int> &own_data, int rank, int size, int neighbor);
   void BasisSortingLocalArrays(std::vector<int> &own_data, std::vector<int> &interval, int size_arr, int rank,
                                int size);
   void SendingResult(int rank);

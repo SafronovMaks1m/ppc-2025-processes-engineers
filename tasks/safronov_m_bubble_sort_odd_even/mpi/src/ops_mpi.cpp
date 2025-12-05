@@ -2,12 +2,10 @@
 
 #include <mpi.h>
 
-#include <iostream>
-#include <numeric>
+#include <algorithm>
 #include <vector>
 
 #include "safronov_m_bubble_sort_odd_even/common/include/common.hpp"
-#include "util/include/util.hpp"
 
 namespace safronov_m_bubble_sort_odd_even {
 
@@ -57,7 +55,7 @@ std::vector<int> SafronovMBubbleSortOddEvenMPI::CalculatingInterval(int size_prc
 }
 
 void SafronovMBubbleSortOddEvenMPI::OddEvenBubble(std::vector<int> &own_data, int own_size, int begin, int phase) {
-  if (!own_size) {
+  if (own_size == 0) {
     return;
   }
   int indent = begin % 2 == phase ? 0 : 1;
@@ -70,7 +68,10 @@ void SafronovMBubbleSortOddEvenMPI::OddEvenBubble(std::vector<int> &own_data, in
   }
 }
 
-void SafronovMBubbleSortOddEvenMPI::DataExchange(std::vector<int> &own_data, int rank, int neighbor) {
+void SafronovMBubbleSortOddEvenMPI::DataExchange(std::vector<int> &own_data, int rank, int size, int neighbor) {
+  if (((rank + neighbor) >= size) || ((rank + neighbor) < 0)) {
+    return;
+  }
   MPI_Status status;
   int elem_send = neighbor == 1 ? own_data.back() : own_data[0];
   int elem_recv = 0;
@@ -87,21 +88,22 @@ void SafronovMBubbleSortOddEvenMPI::DataExchange(std::vector<int> &own_data, int
 
 void SafronovMBubbleSortOddEvenMPI::BasisSortingLocalArrays(std::vector<int> &own_data, std::vector<int> &interval,
                                                             int size_arr, int rank, int size) {
-  int own_size = own_data.size();
-  for (int i = 0; i < size_arr + 1; i++) {
+  int own_size = static_cast<int>(own_data.size());
+
+  for (int i = 0; i < size_arr + size - 1; i++) {
     if (i % 2 == 0) {
       OddEvenBubble(own_data, own_size, interval[0], 0);
-      if ((rank % 2 == 0) && (rank + 1 < size) && (interval[1] != size_arr - 1) && (interval[0] <= interval[1])) {
-        DataExchange(own_data, rank, 1);
+      if ((rank % 2 == 0) && (interval[1] != size_arr - 1) && (interval[0] <= interval[1])) {
+        DataExchange(own_data, rank, size, 1);
       } else if ((interval[0] <= interval[1]) && (rank % 2 == 1)) {
-        DataExchange(own_data, rank, -1);
+        DataExchange(own_data, rank, size, -1);
       }
     } else {
       OddEvenBubble(own_data, own_size, interval[0], 1);
-      if ((rank % 2 == 1) && (rank + 1 < size) && (interval[1] != size_arr - 1) && (interval[0] <= interval[1])) {
-        DataExchange(own_data, rank, 1);
-      } else if ((interval[0] <= interval[1]) && (rank != 0) && (rank % 2 == 0)) {
-        DataExchange(own_data, rank, -1);
+      if ((rank % 2 == 1) && (interval[1] != size_arr - 1) && (interval[0] <= interval[1])) {
+        DataExchange(own_data, rank, size, 1);
+      } else if ((interval[0] <= interval[1]) && (rank % 2 == 0)) {
+        DataExchange(own_data, rank, size, -1);
       }
     }
   }
@@ -131,7 +133,7 @@ bool SafronovMBubbleSortOddEvenMPI::RunImpl() {
   SendingVector(rank);
 
   if (rank == 0) {
-    int size_arr = GetInput().size();
+    int size_arr = static_cast<int>(GetInput().size());
     std::vector<int> sizes_local_arrays(size);
     for (int i = 1; i < size; i++) {
       std::vector<int> interval = CalculatingInterval(size, i, size_arr);
@@ -159,9 +161,9 @@ bool SafronovMBubbleSortOddEvenMPI::RunImpl() {
     if (buf[0] <= buf[1]) {
       own_data = std::vector<int>(GetInput().begin() + buf[0], GetInput().begin() + buf[1] + 1);
     }
-    int size_arr = GetInput().size();
+    int size_arr = static_cast<int>(GetInput().size());
     BasisSortingLocalArrays(own_data, buf, size_arr, rank, size);
-    MPI_Send(own_data.data(), own_data.size(), MPI_INT, 0, 2, MPI_COMM_WORLD);
+    MPI_Send(own_data.data(), static_cast<int>(own_data.size()), MPI_INT, 0, 2, MPI_COMM_WORLD);
   }
   SendingResult(rank);
   return true;

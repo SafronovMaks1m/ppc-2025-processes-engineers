@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <ranges>
 #include <vector>
 
 #include "safronov_m_bubble_sort_odd_even/common/include/common.hpp"
@@ -21,7 +22,8 @@ class SafronovMBubbleSortOddEvenPerfTests : public ppc::util::BaseRunPerfTests<I
       vec[i] = kCount_ - i;
     }
     input_data_ = vec;
-    std::sort(std::begin(vec), std::end(vec));
+    // std::sort(vec.begin(), vec.end());
+    std::ranges::sort(vec);
     res_ = vec;
   }
 
