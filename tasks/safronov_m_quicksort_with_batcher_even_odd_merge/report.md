@@ -1,4 +1,4 @@
-# Сумма значений по столбцам матрицы
+<!-- # Сумма значений по столбцам матрицы
 
 - Student: Сафронов Максим Александрович, group 3823Б1ПР4
 - Technology: SEQ | MPI
@@ -79,7 +79,7 @@
 * ops_mpi.cpp — параллельная реализация с использованием MPI;
 * common.hpp — определения типов данных;
 
-Основные классы: SafronovMBubbleSortOddEvenSEQ и SafronovMBubbleSortOddEvenMPI.
+Основные классы: SafronovMQuicksortWithBatcherEvenOddMergeSEQ и SafronovMQuicksortWithBatcherEvenOddMergeMPI.
 
 ## 6. Experimental Setup
 - Hardware/OS: CPU - Intel Core i5-11400F, 6 ядер/12 потоков; RAM - 16 Gb; ОС - Windows 10 
@@ -121,4 +121,4 @@ Present time, speedup and efficiency. Example table:
 
 ## 9. References
 1. Лекции по параллельному программированию
-2. Практики по параллельному программированию
+2. Практики по параллельному программированию -->

@@ -7,15 +7,16 @@
 #include <tuple>
 #include <vector>
 
-#include "safronov_m_bubble_sort_odd_even/common/include/common.hpp"
-#include "safronov_m_bubble_sort_odd_even/mpi/include/ops_mpi.hpp"
-#include "safronov_m_bubble_sort_odd_even/seq/include/ops_seq.hpp"
+#include "safronov_m_quicksort_with_batcher_even_odd_merge/common/include/common.hpp"
+#include "safronov_m_quicksort_with_batcher_even_odd_merge/mpi/include/ops_mpi.hpp"
+#include "safronov_m_quicksort_with_batcher_even_odd_merge/seq/include/ops_seq.hpp"
 #include "util/include/func_test_util.hpp"
 #include "util/include/util.hpp"
 
-namespace safronov_m_bubble_sort_odd_even {
+namespace safronov_m_quicksort_with_batcher_even_odd_merge {
 
-class SafronovMBubbleSortOddEvenFuncTests : public ppc::util::BaseRunFuncTests<InType, OutType, TestType> {
+class SafronovMQuicksortWithBatcherEvenOddMergeFuncTests
+    : public ppc::util::BaseRunFuncTests<InType, OutType, TestType> {
  public:
   static std::string PrintTestParam(const TestType &test_param) {
     return std::get<0>(test_param);
@@ -43,7 +44,7 @@ class SafronovMBubbleSortOddEvenFuncTests : public ppc::util::BaseRunFuncTests<I
 
 namespace {
 
-TEST_P(SafronovMBubbleSortOddEvenFuncTests, BubbleSortOddEvenFunc) {
+TEST_P(SafronovMQuicksortWithBatcherEvenOddMergeFuncTests, QuicksortWithBatcherEvenOddMerge) {
   ExecuteTest(GetParam());
 }
 
@@ -81,17 +82,20 @@ const std::array<TestType, 13> kTestParam = {
                          7,   8,   9,   10,  11,  12, 13, 14, 15, 17, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28,
                          29,  31,  32,  33,  34,  35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 50, 99})};
 
-const auto kTestTasksList = std::tuple_cat(ppc::util::AddFuncTask<SafronovMBubbleSortOddEvenMPI, InType>(
-                                               kTestParam, PPC_SETTINGS_safronov_m_bubble_sort_odd_even),
-                                           ppc::util::AddFuncTask<SafronovMBubbleSortOddEvenSEQ, InType>(
-                                               kTestParam, PPC_SETTINGS_safronov_m_bubble_sort_odd_even));
+const auto kTestTasksList =
+    std::tuple_cat(ppc::util::AddFuncTask<SafronovMQuicksortWithBatcherEvenOddMergeMPI, InType>(
+                       kTestParam, PPC_SETTINGS_safronov_m_quicksort_with_batcher_even_odd_merge),
+                   ppc::util::AddFuncTask<SafronovMQuicksortWithBatcherEvenOddMergeSEQ, InType>(
+                       kTestParam, PPC_SETTINGS_safronov_m_quicksort_with_batcher_even_odd_merge));
 
 const auto kGtestValues = ppc::util::ExpandToValues(kTestTasksList);
 
-const auto kPerfTestName = SafronovMBubbleSortOddEvenFuncTests::PrintFuncTestName<SafronovMBubbleSortOddEvenFuncTests>;
+const auto kPerfTestName = SafronovMQuicksortWithBatcherEvenOddMergeFuncTests::PrintFuncTestName<
+    SafronovMQuicksortWithBatcherEvenOddMergeFuncTests>;
 
-INSTANTIATE_TEST_SUITE_P(BubbleSortOddEvenFunc, SafronovMBubbleSortOddEvenFuncTests, kGtestValues, kPerfTestName);
+INSTANTIATE_TEST_SUITE_P(QuicksortWithBatcherEvenOddMerge, SafronovMQuicksortWithBatcherEvenOddMergeFuncTests,
+                         kGtestValues, kPerfTestName);
 
 }  // namespace
 
-}  // namespace safronov_m_bubble_sort_odd_even
+}  // namespace safronov_m_quicksort_with_batcher_even_odd_merge
