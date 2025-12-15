@@ -21,8 +21,8 @@ class SafronovMQuicksortWithBatcherEvenOddMergePerfTests : public ppc::util::Bas
       vec[i] = kCount_ - i;
     }
     input_data_ = vec;
-    std::sort(vec.begin(), vec.end());
-    // std::ranges::sort(vec);
+    // std::sort(vec.begin(), vec.end());
+    std::ranges::sort(vec);
     res_ = vec;
   }
 

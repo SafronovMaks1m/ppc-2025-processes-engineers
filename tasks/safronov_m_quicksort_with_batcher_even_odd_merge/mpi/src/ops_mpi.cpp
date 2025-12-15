@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <utility>
 #include <vector>
+#include <cstddef>
 
 #include "safronov_m_quicksort_with_batcher_even_odd_merge/common/include/common.hpp"
 
@@ -118,8 +119,8 @@ void SafronovMQuicksortWithBatcherEvenOddMergeMPI::QuickSort(std::vector<int> &a
 void SafronovMQuicksortWithBatcherEvenOddMergeMPI::MergeAndSplit(std::vector<int> &own_data,
                                                                  std::vector<int> &neighbor_data, bool flag) {
   std::vector<int> data(own_data.size() + neighbor_data.size());
-  std::merge(own_data.begin(), own_data.end(), neighbor_data.begin(), neighbor_data.end(), data.begin());
-  // std::ranges::merge(own_data, neighbor_data, data.begin());
+  // std::merge(own_data.begin(), own_data.end(), neighbor_data.begin(), neighbor_data.end(), data.begin());
+  std::ranges::merge(own_data, neighbor_data, data.begin());
   if (!flag) {
     auto mid = data.begin() + static_cast<std::ptrdiff_t>(own_data.size());
     std::copy(data.begin(), mid, own_data.begin());
