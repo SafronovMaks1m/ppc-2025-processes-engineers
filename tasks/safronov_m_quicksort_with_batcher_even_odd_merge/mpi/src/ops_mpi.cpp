@@ -3,9 +3,9 @@
 #include <mpi.h>
 
 #include <algorithm>
+#include <cstddef>
 #include <utility>
 #include <vector>
-#include <cstddef>
 
 #include "safronov_m_quicksort_with_batcher_even_odd_merge/common/include/common.hpp"
 
