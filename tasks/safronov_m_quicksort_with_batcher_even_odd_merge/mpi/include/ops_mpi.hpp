@@ -29,6 +29,7 @@ class SafronovMQuicksortWithBatcherEvenOddMergeMPI : public BaseTask {
   static void OddPhase(std::vector<int> &own_data, std::vector<int> &interval, int size_arr, int rank, int size);
   static int LengthsLocalArrays(int size_arr, int rank, int size);
   static void QuickSort(std::vector<int> &array);
+  static std::pair<int, int> SplitRange(std::vector<int> &array, int left, int right);
   void SendingResult(int rank);
 };
 

@@ -21,6 +21,32 @@ bool SafronovMQuicksortWithBatcherEvenOddMergeSEQ::PreProcessingImpl() {
   return true;
 }
 
+std::pair<int, int> SafronovMQuicksortWithBatcherEvenOddMergeSEQ::SplitRange(std::vector<int> &array, int left,
+                                                                             int right) {
+  int i = left;
+  int j = right;
+  int mid = left + ((right - left) / 2);
+  int pivot = array[mid];
+
+  while (i <= j) {
+    while (array[i] < pivot) {
+      i++;
+    }
+    while (array[j] > pivot) {
+      j--;
+    }
+    if (i <= j) {
+      int tmp = array[i];
+      array[i] = array[j];
+      array[j] = tmp;
+      i++;
+      j--;
+    }
+  }
+
+  return {i, j};
+}
+
 bool SafronovMQuicksortWithBatcherEvenOddMergeSEQ::RunImpl() {
   std::vector<int> array = GetInput();
   if (array.empty()) {
@@ -28,44 +54,29 @@ bool SafronovMQuicksortWithBatcherEvenOddMergeSEQ::RunImpl() {
   }
 
   std::vector<std::pair<int, int>> stack;
-  int size = static_cast<int>(array.size());
-  std::pair<int, int> range(0, size - 1);
-  stack.push_back(range);
+  stack.emplace_back(0, static_cast<int>(array.size()) - 1);
 
   while (!stack.empty()) {
-    int left = stack.back().first;
-    int right = stack.back().second;
+    auto range = stack.back();
     stack.pop_back();
+
+    int left = range.first;
+    int right = range.second;
+
     if (left >= right) {
       continue;
     }
-    int i = left;
-    int j = right;
-    int pivot = array[left + (right - left) / 2];
-    while (i <= j) {
-      while (array[i] < pivot) {
-        i++;
-      }
-      while (array[j] > pivot) {
-        j--;
-      }
-      if (i <= j) {
-        int tmp = array[i];
-        array[i] = array[j];
-        array[j] = tmp;
-        i++;
-        j--;
-      }
+
+    auto borders = SplitRange(array, left, right);
+
+    if (left < borders.second) {
+      stack.emplace_back(left, borders.second);
     }
-    if (left < j) {
-      std::pair<int, int> left_range(left, j);
-      stack.push_back(left_range);
-    }
-    if (i < right) {
-      std::pair<int, int> right_range(i, right);
-      stack.push_back(right_range);
+    if (borders.first < right) {
+      stack.emplace_back(borders.first, right);
     }
   }
+
   GetOutput().swap(array);
   return true;
 }

@@ -3,6 +3,7 @@
 #include <mpi.h>
 
 #include <algorithm>
+#include <utility>
 #include <vector>
 
 #include "safronov_m_quicksort_with_batcher_even_odd_merge/common/include/common.hpp"
@@ -63,47 +64,53 @@ std::vector<int> SafronovMQuicksortWithBatcherEvenOddMergeMPI::CalculatingInterv
   return vec;
 }
 
+std::pair<int, int> SafronovMQuicksortWithBatcherEvenOddMergeMPI::SplitRange(std::vector<int> &array, int left,
+                                                                             int right) {
+  int i = left;
+  int j = right;
+  int mid = left + ((right - left) / 2);
+  int pivot = array[mid];
+
+  while (i <= j) {
+    while (array[i] < pivot) {
+      i++;
+    }
+    while (array[j] > pivot) {
+      j--;
+    }
+    if (i <= j) {
+      int tmp = array[i];
+      array[i] = array[j];
+      array[j] = tmp;
+      i++;
+      j--;
+    }
+  }
+
+  return {i, j};
+}
+
 void SafronovMQuicksortWithBatcherEvenOddMergeMPI::QuickSort(std::vector<int> &array) {
   if (array.empty()) {
     return;
   }
   std::vector<std::pair<int, int>> stack;
-  int size = static_cast<int>(array.size());
-  std::pair<int, int> range(0, size - 1);
-  stack.push_back(range);
+  stack.emplace_back(0, static_cast<int>(array.size()) - 1);
 
   while (!stack.empty()) {
-    int left = stack.back().first;
-    int right = stack.back().second;
+    auto range = stack.back();
     stack.pop_back();
+    int left = range.first;
+    int right = range.second;
     if (left >= right) {
       continue;
     }
-    int i = left;
-    int j = right;
-    int pivot = array[left + (right - left) / 2];
-    while (i <= j) {
-      while (array[i] < pivot) {
-        i++;
-      }
-      while (array[j] > pivot) {
-        j--;
-      }
-      if (i <= j) {
-        int tmp = array[i];
-        array[i] = array[j];
-        array[j] = tmp;
-        i++;
-        j--;
-      }
+    auto borders = SplitRange(array, left, right);
+    if (left < borders.second) {
+      stack.emplace_back(left, borders.second);
     }
-    if (left < j) {
-      std::pair<int, int> left_range(left, j);
-      stack.push_back(left_range);
-    }
-    if (i < right) {
-      std::pair<int, int> right_range(i, right);
-      stack.push_back(right_range);
+    if (borders.first < right) {
+      stack.emplace_back(borders.first, right);
     }
   }
 }
@@ -112,10 +119,13 @@ void SafronovMQuicksortWithBatcherEvenOddMergeMPI::MergeAndSplit(std::vector<int
                                                                  std::vector<int> &neighbor_data, bool flag) {
   std::vector<int> data(own_data.size() + neighbor_data.size());
   std::merge(own_data.begin(), own_data.end(), neighbor_data.begin(), neighbor_data.end(), data.begin());
+  // std::ranges::merge(own_data, neighbor_data, data.begin());
   if (!flag) {
-    std::copy(data.begin(), data.begin() + own_data.size(), own_data.begin());
+    auto mid = data.begin() + static_cast<std::ptrdiff_t>(own_data.size());
+    std::copy(data.begin(), mid, own_data.begin());
   } else {
-    std::copy(data.begin() + neighbor_data.size(), data.end(), own_data.begin());
+    auto start = data.begin() + static_cast<std::ptrdiff_t>(neighbor_data.size());
+    std::copy(start, data.end(), own_data.begin());
   }
 }
 
@@ -124,9 +134,9 @@ void SafronovMQuicksortWithBatcherEvenOddMergeMPI::DataExchange(std::vector<int>
   MPI_Status status;
   int neighbor_size = LengthsLocalArrays(size_arr, rank + neighbor, size);
   std::vector<int> neighbor_data(neighbor_size);
-  MPI_Sendrecv(own_data.data(), own_data.size(), MPI_INT, rank + neighbor, 0, neighbor_data.data(), neighbor_size,
-               MPI_INT, rank + neighbor, 0, MPI_COMM_WORLD, &status);
-  int flag = (neighbor == 1 ? false : true);
+  MPI_Sendrecv(own_data.data(), static_cast<int>(own_data.size()), MPI_INT, rank + neighbor, 0, neighbor_data.data(),
+               neighbor_size, MPI_INT, rank + neighbor, 0, MPI_COMM_WORLD, &status);
+  bool flag = (neighbor != 1);
   MergeAndSplit(own_data, neighbor_data, flag);
 }
 
